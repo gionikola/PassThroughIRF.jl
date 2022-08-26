@@ -1,8 +1,9 @@
+
+allpaths(var_indexes, period) = collect(Iterators.product(ntuple(i->var_indexes, period)...))
+
 function filterpaths(response::Int, medium::Int, numvars::Int, periods::Int)
     
     var_indexes = 1:numvars
-
-    allpaths(var_indexes, period) = collect(Iterators.product(ntuple(i->var_indexes, period)...))
     
     paths = []
     for t in 1:periods 
