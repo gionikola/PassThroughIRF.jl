@@ -10,7 +10,7 @@ function filterpaths(response::Int, medium::Int, numvars::Int, periods::Int)
         paths_t = allpaths(var_indexes, t)
         storepaths_t = []
         for i in 1:length(paths_t)
-            if medium in paths_t[i] && paths_t[i][end] == response
+            if medium in paths_t[i][1:(end-1)] && paths_t[i][end] == response
                 push!(storepaths_t, paths_t[i]) 
             end 
         end 
