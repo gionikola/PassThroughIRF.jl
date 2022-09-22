@@ -4,7 +4,7 @@ CurrentModule = PassThroughIRF
 
 # PassThroughIRF
 
-Documentation for [PassThroughIRF](https://github.com/my-username/PassThroughIRF.jl).
+Documentation for [PassThroughIRF](https://github.com/gionikola/PassThroughIRF.jl).
 
 ```@index
 ```
