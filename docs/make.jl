@@ -5,12 +5,12 @@ DocMeta.setdocmeta!(PassThroughIRF, :DocTestSetup, :(using PassThroughIRF); recu
 
 makedocs(;
     modules=[PassThroughIRF],
-    authors="Acme Corp",
-    repo="https://github.com/my-username/PassThroughIRF.jl/blob/{commit}{path}#{line}",
+    authors="gionikola",
+    repo="https://github.com/gionikola/PassThroughIRF.jl/blob/{commit}{path}#{line}",
     sitename="PassThroughIRF.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://my-username.github.io/PassThroughIRF.jl",
+        canonical="https://gionikola.github.io/PassThroughIRF.jl",
         edit_link="main",
         assets=String[],
     ),
@@ -20,6 +20,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/my-username/PassThroughIRF.jl",
+    repo="github.com/gionikola/PassThroughIRF.jl",
     devbranch="main",
 )
