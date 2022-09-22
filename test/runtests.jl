@@ -2,5 +2,7 @@ using PassThroughIRF
 using Test
 
 @testset "PassThroughIRF.jl" begin
-    # Write your tests here.
+    
+    @test allpaths(1, 1) == 1
+    
 end
