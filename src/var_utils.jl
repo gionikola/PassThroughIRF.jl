@@ -63,19 +63,17 @@ end
 
 """ 
 """ 
-function drawlagcoefficients(Y::Matrix{Float64}, Σ::Matrix{Float64}, priormean::Vector{Float64}, priorvar::Matrix{Float64}; lags::Int64 = 1)
+function drawlagcoefficients(Y::Matrix{Float64}, Σu::Matrix{Float64}, αstar::Vector{Float64}, V::Matrix{Float64}; lags::Int64 = 1)
     
-    if length(priormean) != size(Y)[2]^2 * lags + size(Y)[2] 
-        throw("`priormean` must be equal to M^2 * p + M, where M is the number of endogenous variables and p is the number of lags.")
+    if length(αstar) != size(Y)[2]^2 * lags + size(Y)[2] 
+        throw("`αstar` must be equal to M^2 * p + M, where M is the number of endogenous variables and p is the number of lags.")
     end 
 
-    if size(priorvar)[1] != length(priormean)  
-        throw("`priorvar` must be a square matrix of the same length/width as the length of vector `priormean`.")
+    if size(V)[1] != 1 + size(Y)[2] * lags   
+        throw("`V` must be a square matrix of the same length/width as the number of coefficient parameters in each equation of the VAR.")
     end 
 
-    if isposdef(priorvar) != true 
-        throw("`priorvar` must be a positive definite matrix (which implies it must be Hermitian).")
-    end 
+    priorvar = kron(V, Σu)
     
     p = lags 
     y = vec(Y[(p+1):end,:]')
@@ -85,10 +83,40 @@ function drawlagcoefficients(Y::Matrix{Float64}, Σ::Matrix{Float64}, priormean:
         Z[i-p+1,:] = vcat([1], vec(Y[(i-p+1):i,:]'))
     end 
     Z = Z' 
-    w = [ sqrt(inv(priorvar)) * priormean ; kron(I(T-p), sqrt(inv(Σ))) * y ] 
-    W = [ sqrt(inv(priorvar)) ; kron(Z', sqrt(inv(Σ))) ]
+    w = [ sqrt(inv(priorvar)) * αstar ; kron(I(T-p), sqrt(inv(Σu))) * y ] 
+    W = [ sqrt(inv(priorvar)) ; kron(Z', sqrt(inv(Σu))) ]
     Σbar = inv(W' * W)
     αbar = Σbar * W' * w 
 
-    return α = multinormal(αbar, Σbar)
+    α = multinormal(αbar, Σbar)
+
+    return α, αbar
 end 
+
+"""
+"""
+function drawerrormatrix(Y::Matrix{Float64}, p::Int64, αstar::Vector{Float64}, αbar::Vector{Float64}, V::Matrix{Float64}, Sstar::Matrix{Float64}, n::Int64)
+
+    p = lags 
+    T = size(Y)[1]
+    Z = zeros(T - p, 1 + p * size(Y)[2])
+    for i in p:(T-1) 
+        Z[i-p+1,:] = vcat([1], vec(Y[(i-p+1):i,:]'))
+    end 
+    Z = Z' 
+    Y = Y[(p+1):end,:]
+    T = T - p
+
+    Astar = reshape(αstar, size(Y)[2], 1 + size(Y)[2]*p) # αstar is prior mean for α
+    Abar = reshape(αbar, size(Y)[2], 1 + size(Y)[2]*p) # αbar is posterior mean for α
+    Y = Y'
+    Ahat = Y * Z' * inv(Z * Z')
+    Σutilde = (Y - Ahat * Z) * (Y - Ahat * Z)' * (1/T)
+
+    S = T * Σutilde + Sstar + Ahat * Z * Z' * Ahat' + Astar * inv(V) * Astar' - Abar * (inv(V) + Z * Z') * Abar' 
+    τ = T + n
+
+    Σu = inversewishart(S, τ)
+
+    return Σu::Matrix{Float64} 
+end
