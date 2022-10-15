@@ -65,13 +65,27 @@ end
 """ 
 function drawlagcoefficients(Y::Matrix{Float64}, Σ::Matrix{Float64}, priormean::Vector{Float64}, priorvar::Matrix{Float64}; lags::Int64 = 1)
     
-    y = vec(Y')
+    if length(priormean) != size(Y)[2]^2 * lags + size(Y)[2] 
+        throw("`priormean` must be equal to M^2 * p + M, where M is the number of endogenous variables and p is the number of lags.")
+    end 
+
+    if size(priorvar)[1] != length(priormean)  
+        throw("`priorvar` must be a square matrix of the same length/width as the length of vector `priormean`.")
+    end 
+
+    if isposdef(priorvar) != true 
+        throw("`priorvar` must be a positive definite matrix (which implies it must be Hermitian).")
+    end 
+    
+    p = lags 
+    y = vec(Y[(p+1):end,:]')
     T = size(Y)[1]
     Z = zeros(T - p, 1 + p * size(Y)[2])
-    for i in (p+1):T 
-        Z[i,:] = [1, vec(Y[(i-p):i,:]')]
+    for i in p:(T-1) 
+        Z[i-p+1,:] = vcat([1], vec(Y[(i-p+1):i,:]'))
     end 
-    w = [ sqrt(inv(priorvar)) * priormean ; kron(I(T), sqrt(inv(Σ))) * y ] 
+    Z = Z' 
+    w = [ sqrt(inv(priorvar)) * priormean ; kron(I(T-p), sqrt(inv(Σ))) * y ] 
     W = [ sqrt(inv(priorvar)) ; kron(Z', sqrt(inv(Σ))) ]
     Σbar = inv(W' * W)
     αbar = Σbar * W' * w 
