@@ -120,3 +120,13 @@ function drawerrormatrix(Y::Matrix{Float64}, p::Int64, αstar::Vector{Float64}, 
 
     return Σu::Matrix{Float64} 
 end
+
+"""
+"""
+function drawparameters(Y::Matrix{Float64}, Σu::Matrix{Float64}, lags::Int64, αstar::Vector{Float64}, V::Matrix{Float64}, Sstar::Matrix{Float64}, n::Int64)
+
+    α, αbar = drawlagcoefficients(Y, Σu, αstar, V, lags = lags)
+    Σu = drawerrormatrix(Y, lags, αstar, αbar, V, Sstar, n)
+
+    return α, Σu 
+end 
