@@ -57,7 +57,7 @@ end
 """
 """
 function inversewishart(Σ::Matrix{Float64}, n::Int64)
-    Ω = wishart(Σ, n)
+    Ω = wishart(inv(Σ), n)
     return inv(Ω)::Matrix{Float64}
 end 
 
@@ -97,7 +97,6 @@ end
 """
 function drawerrormatrix(Y::Matrix{Float64}, p::Int64, αstar::Vector{Float64}, αbar::Vector{Float64}, V::Matrix{Float64}, Sstar::Matrix{Float64}, n::Int64)
 
-    p = lags 
     T = size(Y)[1]
     Z = zeros(T - p, 1 + p * size(Y)[2])
     for i in p:(T-1) 
