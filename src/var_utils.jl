@@ -127,6 +127,7 @@ function drawparameters(Y::Matrix{Float64}, Σu::Matrix{Float64}, lags::Int64, �
 
     α, αbar = drawlagcoefficients(Y, Σu, αstar, V, lags = lags)
     Σu = drawerrormatrix(Y, lags, αstar, αbar, V, Sstar, n)
+    α = reshape(α, size(Y)[2], 1 + lags * size(Y)[2])
 
-    return α::Vector{Float64}, Σu::Matrix{Float64} 
+    return α::Matrix{Float64}, Σu::Matrix{Float64} 
 end 
