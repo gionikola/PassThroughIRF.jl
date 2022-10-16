@@ -8,8 +8,10 @@ module PassThroughIRF
     include("path_intensity.jl")
     include("irf.jl")
     include("ptirf.jl")
+    include("var_utils.jl")
+    include("simulate_var.jl")
     include("var.jl")
 
-    export irf, ptirf 
+    export irf, ptirf, simulatevar, estimatevar
 
 end
