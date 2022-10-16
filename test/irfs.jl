@@ -3,7 +3,7 @@ using LinearAlgebra
 using Statistics
 using Plots
 
-T = 200
+T = 500
 numvar = 2
 lags = 1
 coefficients = [0.0 0.5 0.01
@@ -46,7 +46,7 @@ plot!(res2)
 ###############
 ###############
 periods = 10
-shock = 1
+shock = 2
 medium = 2
 response = 1
 
@@ -72,20 +72,28 @@ for i in 1:(periods-1)
     for j in 1:length(αlist)
         responses[j] = irflist[j][i]
     end  
-    irfdistr[i,1] = mean(responses) 
+    irfdistr[i,1] = quantile(responses, 0.5) 
     irfdistr[i,2] = quantile(responses, 0.1)
     irfdistr[i,3] = quantile(responses, 0.9)
 end 
 plot(irfdistr) 
+actualcoefmats = []
+push!(actualcoefmats, coefficients[:,2:end])
+res1 = irf(response, shock, periods, lagcoefmats, covariance)
+plot!(res1) 
 
-irfdistr = zeros(periods-1, 3)
+ptirfdistr = zeros(periods-1, 3)
 for i in 1:(periods-1)
     responses = zeros(length(αlist))
     for j in 1:length(αlist)
         responses[j] = ptirflist[j][i]
     end  
-    irfdistr[i,1] = mean(responses) 
-    irfdistr[i,2] = quantile(responses, 0.1)
-    irfdistr[i,3] = quantile(responses, 0.9)
+    ptirfdistr[i,1] = quantile(responses, 0.5) 
+    ptirfdistr[i,2] = quantile(responses, 0.1)
+    ptirfdistr[i,3] = quantile(responses, 0.9)
 end 
-plot(irfdistr) 
+plot(ptirfdistr) 
+actualcoefmats = []
+push!(actualcoefmats, coefficients[:,2:end])
+res2 = ptirf(response, medium, shock, periods, actualcoefmats, PassThroughIRF.rotationmat(covariance))
+plot!(res2)
