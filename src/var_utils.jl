@@ -80,7 +80,7 @@ function drawlagcoefficients(Y::Matrix{Float64}, Σu::Matrix{Float64}, αstar::V
     T = size(Y)[1]
     Z = zeros(T - p, 1 + p * size(Y)[2])
     for i in p:(T-1) 
-        Z[i-p+1,:] = vcat([1], vec(Y[(i-p+1):i,:]'))
+        Z[i-p+1,:] = vcat([1], vec(reverse(Y[(i-p+1):i,:], dims = 1)'))
     end 
     Z = Z' 
     w = [ sqrt(inv(priorvar)) * αstar ; kron(I(T-p), sqrt(inv(Σu))) * y ] 
@@ -100,7 +100,7 @@ function drawerrormatrix(Y::Matrix{Float64}, p::Int64, αstar::Vector{Float64}, 
     T = size(Y)[1]
     Z = zeros(T - p, 1 + p * size(Y)[2])
     for i in p:(T-1) 
-        Z[i-p+1,:] = vcat([1], vec(Y[(i-p+1):i,:]'))
+        Z[i-p+1,:] = vcat([1], vec(reverse(Y[(i-p+1):i,:], dims = 1)'))
     end 
     Z = Z' 
     Y = Y[(p+1):end,:]
