@@ -10,14 +10,22 @@ function ptirf(response, medium, shock, periods, lagcoefmats, shockcoefmat)
         response_t = []
         if t <= numlags 
             for j in 0:(t-2)
-                for i in 1:length(paths[t-j])
-                    push!(response_t, pathintensity(paths[t-j][i], lagcoefmats[j+1], shockcoefmat, shock))
+                if paths[t-j] == "empty"
+                    push!(response_t, 0.0)
+                else 
+                    for i in 1:length(paths[t-j])
+                        push!(response_t, pathintensity(paths[t-j][i], lagcoefmats[j+1], shockcoefmat, shock))
+                    end 
                 end 
             end 
         else 
             for j in 0:(numlags-1)
-                for i in 1:length(paths[t-j])
-                    push!(response_t, pathintensity(paths[t-j][i], lagcoefmats[j+1], shockcoefmat, shock))
+                if paths[t-j] == "empty"
+                    push!(response_t, 0.0)
+                else 
+                    for i in 1:length(paths[t-j])
+                        push!(response_t, pathintensity(paths[t-j][i], lagcoefmats[j+1], shockcoefmat, shock))
+                    end 
                 end 
             end 
         end 
