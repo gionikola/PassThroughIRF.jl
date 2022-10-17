@@ -16,7 +16,9 @@ function irf(response, shock, periods, lagcoefmats, shockcoefmat)
         push!(paths, storepaths_t)
     end 
 
+    responsevarnum = response 
     response = []
+    push!(response, shockcoefmat[responsevarnum, shock])
     for t in 2:(length(paths))
         response_t = []
         if t <= numlags 
