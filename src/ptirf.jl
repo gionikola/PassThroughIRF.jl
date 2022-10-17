@@ -6,6 +6,7 @@ function ptirf(response, medium, shock, periods, lagcoefmats, shockcoefmat)
     responsevarnum = response 
     response = []
     #push!(response, shockcoefmat[responsevarnum, shock])
+    push!(response, 0.0)
     for t in 2:(length(paths))
         response_t = []
         if t <= numlags 
