@@ -46,9 +46,9 @@ plot!(res2)
 ###############
 ###############
 periods = 10
-shock = 2
+shock = 1
 medium = 2
-response = 1
+response = 2
 
 Qlist = Matrix{Float64}[] 
 irflist = Vector{Float64}[] 
@@ -66,8 +66,8 @@ for i in 1:length(αlist)
     push!(ptirflist, res2)
 end 
 
-irfdistr = zeros(periods-1, 3)
-for i in 1:(periods-1)
+irfdistr = zeros(periods, 3)
+for i in 1:(periods)
     responses = zeros(length(αlist))
     for j in 1:length(αlist)
         responses[j] = irflist[j][i]
@@ -79,11 +79,11 @@ end
 plot(irfdistr) 
 actualcoefmats = []
 push!(actualcoefmats, coefficients[:,2:end])
-res1 = irf(response, shock, periods, lagcoefmats, covariance)
+res1 = irf(response, shock, periods, lagcoefmats, PassThroughIRF.rotationmat(covariance))
 plot!(res1) 
 
-ptirfdistr = zeros(periods-1, 3)
-for i in 1:(periods-1)
+ptirfdistr = zeros(periods, 3)
+for i in 1:(periods)
     responses = zeros(length(αlist))
     for j in 1:length(αlist)
         responses[j] = ptirflist[j][i]
