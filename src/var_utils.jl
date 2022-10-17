@@ -2,7 +2,8 @@
 """
 function rotationmat(A::Matrix{Float64})
 
-    Q = cholesky(A).L |> Matrix 
+    B = Hermitian(A)
+    Q = cholesky(B).L |> Matrix 
 
     return Q::Matrix{Float64} 
 end 
