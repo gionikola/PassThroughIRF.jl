@@ -7,6 +7,13 @@ function ptirf(response, medium, shock, periods, lagcoefmats, shockcoefmat)
     end 
 
     responses = irf(response, shock, periods, A, shockcoefmat) 
-    responses[1] = 0.0
+
+    if shockcoefmat[shock, medium] == 0.0
+        responses[1] = 0.0
+        responses[2] = 0.0
+    else 
+        responses[1] = 0.0
+    end 
+
     return responses 
 end 
