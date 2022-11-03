@@ -1,41 +1,23 @@
 function irf(response, shock, periods, lagcoefmats, shockcoefmat) 
 
-    numvars = size(shockcoefmat)[1]
-    var_indexes = 1:numvars 
-    numlags = length(lagcoefmats)
-    
-    paths = []
-    for t in 1:periods 
-        paths_t = allpaths(var_indexes, t)
-        storepaths_t = []
-        for i in 1:length(paths_t)
-            if paths_t[i][end] == response
-                push!(storepaths_t, paths_t[i]) 
-            end 
+    A = zeros(size(lagcoefmats)[1] * size(lagcoefmats[1])[1], size(lagcoefmats)[1] * size(lagcoefmats[1])[1])
+    for i in 1:size(lagcoefmats)[1]
+        A[1:size(lagcoefmats[1])[1], (1 + (i-1)*size(lagcoefmats[1])[1]):(i)*size(lagcoefmats[1])[1]] = lagcoefmats[i]
+        if i < size(lagcoefmats)[1]
+            A[size(lagcoefmats[1])[1] + i, i] = 1.0
         end 
-        push!(paths, storepaths_t)
     end 
 
-    responsevarnum = response 
-    response = []
-    push!(response, shockcoefmat[responsevarnum, shock])
-    for t in 2:(length(paths))
-        response_t = []
-        if t <= numlags 
-            for j in 0:(t-2)
-                for i in 1:length(paths[t-j])
-                    push!(response_t, pathintensity(paths[t-j][i], lagcoefmats[j+1], shockcoefmat, shock))
-                end 
-            end 
-        else 
-            for j in 0:(numlags-1)
-                for i in 1:length(paths[t-j])
-                    push!(response_t, pathintensity(paths[t-j][i], lagcoefmats[j+1], shockcoefmat, shock))
-                end 
-            end 
-        end 
-        push!(response, sum(response_t)) 
+    B = zeros(size(A)[2], size(shockcoefmat)[2])
+    B[1:size(shockcoefmat)[1], 1:size(shockcoefmat)[2]] = shockcoefmat
+
+    shockvec = zeros(size(B)[2])
+    shockvec[shock] = 1
+    responses = zeros(1 + periods)
+    for t in 0:periods
+        fullresponse = A^t * B * shockvec
+        responses[t+1] = fullresponse[response]
     end 
 
-    return response
+    return responses
 end 
